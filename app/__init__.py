@@ -38,10 +38,8 @@ def create_app():
     scheduler.add_job(id='Fetch Chat Record', func=fetch_chat_with_context, trigger='interval', hours=1)
     scheduler.add_job(id='Summary Score', func=summary_score_with_context, trigger='interval', hours=6)
 
-    from .blueprints.book_management import book_management_bp # ignore C0415
     from app.blueprints.scraper import summary_score_manager
     
-    app.register_blueprint(book_management_bp, url_prefix='/books')
     app.register_blueprint(summary_score_manager, url_prefix='/summary')
 
     return app
