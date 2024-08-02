@@ -1,6 +1,10 @@
-from flask import render_template, request, redirect, url_for
+import json
+from flask import render_template, request, jsonify, url_for
 from . import summary_score_manager
 from app.models import Score
+
+import logging
+logger = logging.getLogger(__name__)
 
 # @summary_score_manager.route('/')
 # def index():
@@ -10,15 +14,27 @@ from app.models import Score
 #     books = Book.query.all()
 #     return render_template('book_list.html', books=books)
 
-@summary_score_manager.route('/<str:address>', methods=['GET'])
+@summary_score_manager.route('/<string:address>', methods=['GET'])
 def get_score(address):
     """
-    add
+    get score
     """
+    logger.info(f"query request: {address}")
+    resp = {
+        "code": 0,
+        "message": '',
+        "data": {}
+    }
     if request.method == 'GET':
-        score = Score.query.get_or_404(address=address)
-        return score
-    return render_template('404.html')
+        score = Score.query.filter_by(address=address, is_deleted=False).first()
+        if score:
+            resp['data'] = json.loads(score.score_json)
+
+            return jsonify(resp)
+        resp['message'] = "Empty"
+        return jsonify(resp)
+    resp['message'] = f'Unsupport Method {request.method}'
+    return jsonify(resp)
 
 # @summary_score_manager.route('/edit/<int:id>', methods=['GET', 'POST'])
 # def edit_book(id):
