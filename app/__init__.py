@@ -35,8 +35,8 @@ def create_app():
         
     scheduler.start()
     
-    scheduler.add_job(id='Fetch Chat Record', func=fetch_chat_with_context, trigger='interval', minutes=1)
-    scheduler.add_job(id='Summary Score', func=summary_score_with_context, trigger='interval', minutes=1)
+    # scheduler.add_job(id='Fetch Chat Record', func=fetch_chat_with_context, trigger='interval', minutes=1)
+    scheduler.add_job(id='Summary Score', func=summary_score_with_context, trigger='interval', seconds=10)
 
     from .blueprints.book_management import book_management_bp # ignore C0415
     from app.blueprints.scraper import summary_score_manager

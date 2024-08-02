@@ -63,7 +63,7 @@ def fetch_and_store_data():
         return
     # Step 2: Batch fetch usage records by address and insert into database
     for address in addresses:
-        if not User.query.filter_by(address=address).first():
+        if not User.query.filter_by(address=address, is_deleted=False).first():
             user = User(address=address)
             db.session.add(user)
     
@@ -76,7 +76,7 @@ def fetch_and_store_data():
 
         # Step 3: Batch fetch JSON data using session id and store in database
         for session_id in session_ids:
-            if ChatRecord.query.filter_by(session_id=session_id).first():
+            if ChatRecord.query.filter_by(session_id=session_id, is_deleted=False).first():
                 continue
 
             fetch_session_content = f"{google_storage_bucket_url}/{session_id}.json"
@@ -99,15 +99,16 @@ def fetch_and_store_data():
             db.session.add(chat_record)
 
         db.session.commit()
-        logger.info(f"fetch chat content result: {fetch_session_content}")    # pylint: disable=W1203
+        logger.info(f"commit chat records for : {address}")    # pylint: disable=W1203
 
-        summary_score_by_address(address=address)
+        # summary_score_by_address(address=address)
 
 def batch_summary():
     """
     batch summary
     """
-    addresses = User.query.filter_by(is_deleted=False).all()
+    users = User.query.filter_by(is_deleted=False).all()
+    addresses = [user.address for user in users]
     for address in addresses:
         try:
             summary_score_by_address(address=address)
@@ -118,12 +119,15 @@ def summary_score_by_address(address):
     """
     query chatRecord by address, and append content as content pass to summary_score
     """
-    records = ChatRecord.query.filter_by(address=address)
+    logger.info(f"summary_score_by_address : {address}")
+    records = ChatRecord.query.filter_by(address=address, is_deleted=False)
     contents = [r.content for r in records]
     combined_content = "\n".join(contents)
+    logger.info(f"summary_score : {address}")
     result = summary_score(content=combined_content)
     if result:
         # Check if the score for this address already exists
+        logger.info(f"query score : {address}")
         score_entry = Score.query.filter_by(address=address, is_deleted=False).first()
         if score_entry:
             # Update the existing score entry
