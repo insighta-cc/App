@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ book.title if book else 'Add New Book' }}</title>
+</head>
+<body>
+    <h1>{{ 'Edit Book' if book else 'Add New Book' }}</h1>
+    <form method="post">
+        <label>Title</label>
+        <input type="text" name="title" value="{{ book.title if book else '' }}">
+        <label>Author</label>
+        <input type="text" name="author" value="{{ book.author if book else '' }}">
+        <label>Published Date</label>
+        <input type="date" name="published_date" value="{{ book.published_date if book else '' }}">
+        <label>Price</label>
+        <input type="text" name="price" value="{{ book.price if book else '' }}">
+        <button type="submit">{{ 'Update' if book else 'Add' }}</button>
+    </form>
+</body>
+</html>
+
