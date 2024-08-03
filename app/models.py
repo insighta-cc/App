@@ -3,20 +3,6 @@ from app import db
 from datetime import datetime
 from sqlalchemy.types import Integer, String, Text, DateTime, Boolean
 
-class Book(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(100), nullable=False)
-    author = db.Column(db.String(100), nullable=False)
-    published_date = db.Column(db.Date, nullable=False)
-    price = db.Column(db.Float, nullable=False)
-
-class BorrowRecord(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    book_id = db.Column(db.Integer, db.ForeignKey('book.id'), nullable=False)
-    borrow_date = db.Column(db.DateTime, nullable=False)
-    return_date = db.Column(db.DateTime, nullable=True)
-    fee = db.Column(db.Float, nullable=False)
-
 class User(db.Model):
     """
     user info
