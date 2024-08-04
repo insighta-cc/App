@@ -1,5 +1,5 @@
 # Insighta.cc
-![](./app/static/images/Logo-Insighta-V.png)
+![](./app/static/images/favicon.png)
 ## How To Deploy
 
 ## Setup .env
