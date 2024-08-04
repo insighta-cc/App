@@ -6,7 +6,14 @@
 
 ```shell
 PYTHONPATH=.
-GEMINI_API_KEY=<Your-Gemini-Secret-Key>
+
+MYSQL_USER=<Your-Mysql-Username>
+MYSQL_PASSWORD=<Your-Mysql-password>
+MYSQL_HOST=<Your-Mysql-host>
+MYSQL_PORT=<Your-Mysql-port>
+MYSQL_DB=<Your-Mysql-db>
+
+GEMINI_API_KEY=<<Your-Gemini-API_KEY>
 SKILL_LIST=Java, Javascript, Python, C, C++, C#, PHP, Swift, Ruby, TypeScript, Go, Kotlin, Rust, Objective-C, Scala, Shell, Dart, Haskell, Matlab, Perl, R, Groovy, Lua, Ada, Assembly, COBOL, D, Elixir, Erlang, F#, Fortran, Julia, Lisp, OCaml, Pascal, PowerShell, Prolog, Scheme, Scratch, Smalltalk, SQL, Tcl, VBA, Visual Basic, ABAP, Apex, Awk, ColdFusion, Crystal, Other
 LIST_ADDRESS_URL=https://main-wjaxre4ena-uc.a.run.app/usage_addresses
 USAGE_RECORDS_URL=https://main-wjaxre4ena-uc.a.run.app/usage_records
