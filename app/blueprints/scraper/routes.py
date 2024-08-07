@@ -1,5 +1,7 @@
 import json
 from flask import render_template, request, jsonify, url_for
+from flask_cors import cross_origin
+
 from . import summary_score_manager
 from app.models import Score
 
@@ -15,6 +17,7 @@ logger = logging.getLogger(__name__)
 #     return render_template('book_list.html', books=books)
 
 @summary_score_manager.route('/<string:address>', methods=['GET'])
+@cross_origin()
 def get_score(address):
     """
     get score
