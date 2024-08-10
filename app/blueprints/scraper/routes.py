@@ -15,6 +15,20 @@ logger = logging.getLogger(__name__)
 #     """
 #     books = Book.query.all()
 #     return render_template('book_list.html', books=books)
+def process_scores(rs):
+    if len(rs) < 2:
+        return rs
+    
+    # 过滤掉得分小于1的记录
+    filtered = [record for record in rs if record['score'] >= 1]
+
+    # 按得分降序排序
+    sorted_records = sorted(filtered, key=lambda x: x['score'], reverse=True)
+
+    # 取得得分最高的前10条记录
+    top_10_records = sorted_records[:10]
+
+    return top_10_records
 
 @summary_score_manager.route('/<string:address>', methods=['GET'])
 @cross_origin()
@@ -31,8 +45,8 @@ def get_score(address):
     if request.method == 'GET':
         score = Score.query.filter_by(address=address, is_deleted=False).first()
         if score:
-            resp['data'] = json.loads(score.score_json)
-
+            rs = json.loads(score.score_json)
+            resp['data'] = process_scores(rs)
             return jsonify(resp)
         resp['message'] = "Empty"
         return jsonify(resp)

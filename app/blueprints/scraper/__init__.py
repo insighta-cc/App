@@ -109,13 +109,21 @@ def batch_summary():
     """
     users = User.query.filter_by(is_deleted=False).all()
     addresses = [user.address for user in users]
+    
+    evaluation_model = ""
+    prompt_file = os.path.join(os.path.dirname(__file__), 'prompt.md')
+    print(prompt_file)
+    with open(prompt_file, 'r', encoding='utf-8') as r:
+        # 读取prompt.md文件内容存入evaluation_model
+        evaluation_model = r.read()
+
     for address in addresses:
         try:
-            summary_score_by_address(address=address)
+            summary_score_by_address(prompt_evaluation=evaluation_model, address=address)
         except Exception as e:
             logger.error(e)
 
-def summary_score_by_address(address):
+def summary_score_by_address(prompt_evaluation, address):
     """
     query chatRecord by address, and append content as content pass to summary_score
     """
@@ -124,7 +132,7 @@ def summary_score_by_address(address):
     contents = [r.content for r in records]
     combined_content = "\n".join(contents)
     logger.info(f"summary_score : {address}")
-    result = summary_score(content=combined_content)
+    result = summary_score(prompt_evaluation=prompt_evaluation, content=combined_content)
     if result:
         # Check if the score for this address already exists
         logger.info(f"query score : {address}")
@@ -159,22 +167,23 @@ def summary_score_by_address(address):
 
         db.session.commit()
 
-def summary_score(content):
+def summary_score(prompt_evaluation, content):
     """
     invoke gemini to summary score
     """
     api_key = os.getenv('GEMINI_API_KEY')
-    skill_list = os.getenv('SKILL_LIST')
+    # skill_list = os.getenv('SKILL_LIST')
     genai.configure(api_key=api_key)
     model = genai.GenerativeModel('gemini-1.5-flash')
+
     prompt = """
         You are a machine that only returns and replies with valid, iterable RFC8259 compliant JSON in your responses         
-        I need you analysis some sentences and find out which skill it descripted, then give a score about this skill for the objective body it descripted. You should only choose skills in skill_list blow.
-        skill_list: {}
+        I need you analysis the content then find out the skills and rate them according the Evaluation Model, then give a score about this skill for the objective body it described. You should only dependency the Evaluation Model blow.
+        Evaluation Model: {}
         content: {}
         It would be an array about score object. The score object contain field: domain, for example java, the second field is score. 
         """
-    response = model.generate_content(prompt.format(skill_list, content))
+    response = model.generate_content(prompt.format(prompt_evaluation, content))
     # Preprocess the response text to extract JSON
     response_text = response.text.strip()
 
